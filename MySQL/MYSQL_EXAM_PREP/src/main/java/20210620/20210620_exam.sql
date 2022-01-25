@@ -132,7 +132,7 @@ select a.name,
            when hour(co.start) between 6 and 20 then 'Day'
            else 'Night'
            end
-           day_time,
+               day_time,
        round(co.bill, 2),
        cl.full_name,
        c.make,
@@ -144,3 +144,46 @@ from courses co
          join cars c on co.car_id = c.id
          join categories ca on c.category_id = ca.id
 order by co.id;
+
+# 10. find all courses by clients phone number
+create function udf_courses_by_client(phone_number varchar(20))
+    returns int
+    deterministic
+begin
+    return (select count(*)
+            from courses co
+                     cross join clients cl on co.client_id = cl.id
+            where cl.phone_number = phone_number);
+end;
+
+SELECT udf_courses_by_client('(704) 2502909') as count;
+
+
+# 11. full info address
+create procedure udp_courses_by_address(address_name varchar(100))
+    deterministic
+begin
+    select a.name,
+           cl.full_name full_names,
+           (
+               case
+                   when co.bill <= 20 then 'Low'
+                   when co.bill <= 30 then 'Medium'
+                   else 'High'
+                   end) level_of_bill,
+           c.make,
+           c.`condition`,
+           cat.name     cat_name
+    from addresses a
+             join courses co on a.id = co.from_address_id
+             join clients cl on co.client_id = cl.id
+             join cars c on co.car_id = c.id
+             join categories cat on c.category_id = cat.id
+    where a.name = address_name
+    order by c.make, cl.full_name;
+end;
+
+CALL udp_courses_by_address('700 Monterey Avenue');
+CALL udp_courses_by_address('66 Thompson Drive');
+
+
