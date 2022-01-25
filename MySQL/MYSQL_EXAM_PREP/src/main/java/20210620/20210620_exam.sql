@@ -92,7 +92,55 @@ where (c.mileage >= 8000 or c.mileage is null)
 
 # 4. delete
 delete
-from clients where id not in (select client_id from courses)
+from clients
+where id not in (select client_id from courses)
   and char_length(full_name) > 3;
 
 # 5. cars
+select c.make, c.model, c.condition
+from cars c
+order by c.id;
+
+# 6. drivers and cars
+select d.first_name, d.last_name, c.make, c.model, c.mileage
+from drivers d
+         join cars_drivers cd on d.id = cd.driver_id
+         join cars c on c.id = cd.car_id
+where c.mileage is not null
+order by c.mileage desc, d.first_name;
+
+# 7. number of courses
+select c.id as car_id, c.make, c.mileage, count(co.id) count_of_courses, round(avg(co.bill), 2) avg_bill
+from cars c
+         left join courses co on c.id = co.car_id
+group by c.id
+having count_of_courses != 2
+order by count_of_courses desc, c.id;
+
+# 8. regular clients
+select cl.full_name, count(co.car_id) count_of_cars, sum(co.bill) total_sum
+from clients as cl
+         join courses co on cl.id = co.client_id
+where cl.full_name like '_a%'
+group by cl.full_name
+having count_of_cars > 1
+order by cl.full_name;
+
+# 9. full information of courses
+select a.name,
+       case
+           when hour(co.start) between 6 and 20 then 'Day'
+           else 'Night'
+           end
+           day_time,
+       round(co.bill, 2),
+       cl.full_name,
+       c.make,
+       c.model,
+       ca.name category_name
+from courses co
+         join addresses a on co.from_address_id = a.id
+         join clients cl on co.client_id = cl.id
+         join cars c on co.car_id = c.id
+         join categories ca on c.category_id = ca.id
+order by co.id;
