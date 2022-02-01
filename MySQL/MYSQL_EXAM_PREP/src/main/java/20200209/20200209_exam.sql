@@ -151,3 +151,51 @@ from skills_data sd
 where t.name != 'Devify'
 group by t2.name
 order by max_speed desc, town_name;
+
+# 9. total salaries and players by country
+select c.name, count(p.id) total_count_of_players, sum(p.salary) total_sum_of_salaries
+from countries c
+         left join towns t2 on t2.country_id = c.id
+         left join stadiums s on t2.id = s.town_id
+         left join teams t on s.id = t.stadium_id
+         left join players p on t.id = p.team_id
+group by c.name
+order by total_count_of_players desc, c.name;
+
+# 10. find all players that play on stadium
+create function udf_stadium_players_count(stadium_name VARCHAR(30))
+    returns int
+    deterministic
+begin
+    return (select count(*)
+            from players
+                     join teams on players.team_id = teams.id
+                     join stadiums s on teams.stadium_id = s.id
+            where s.name = stadium_name);
+end;
+
+SELECT udf_stadium_players_count('Jaxworks') as `count`;
+SELECT udf_stadium_players_count('Linklinks') as `count`;
+
+
+# 11. find good playmaker by teams
+create procedure udp_find_playmaker(min_dribble_points int, team_name varchar(45))
+    deterministic
+begin
+    select concat_ws(' ', p.first_name, p.last_name) full_name,
+           p.age,
+           p.salary,
+           sd.dribbling,
+           sd.speed,
+           t.name                                    team_name
+    from players p
+             join teams t on p.team_id = t.id
+             join skills_data sd on sd.id = p.skills_data_id
+    where t.name = team_name
+      and sd.dribbling > min_dribble_points
+      and sd.speed > (select avg(speed) from skills_data)
+    order by sd.speed desc
+    limit 1;
+end;
+
+CALL udp_find_playmaker(20, 'Skyble');
