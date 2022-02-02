@@ -120,7 +120,7 @@ from players
 order by salary desc;
 
 # 6.young offense players without contract
-select p.id, concat_ws(' ', first_name, last_name), p.position, p.hire_date
+select p.id, concat_ws(' ', p.first_name, p.last_name), p.age, p.position, p.hire_date
 from players p
          join skills_data sd on p.skills_data_id = sd.id
 where p.age < 23
