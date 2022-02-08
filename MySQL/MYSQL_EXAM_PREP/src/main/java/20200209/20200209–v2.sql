@@ -120,3 +120,107 @@ from players
 where age >= 45;
 
 # 5. players
+select first_name, age, salary
+from players
+order by salary desc;
+
+# 06. Young offense players without contract
+select p.id,
+       concat_ws(' ', p.first_name, p.last_name) full_name,
+       p.age,
+       p.position,
+       p.hire_date
+from players p
+         join skills_data sd on p.skills_data_id = sd.id
+where p.hire_date is null
+  and p.position = 'A'
+  and p.age < 23
+  and sd.strength > 50
+order by p.salary, p.age;
+
+# 07. Detail info for all teams
+select t.name      team_name,
+       t.established,
+       t.fan_base,
+       count(p.id) players_count
+from teams t
+         join players p on t.id = p.team_id
+group by t.id, t.fan_base
+order by players_count desc, t.fan_base desc;
+
+# 08. The fastest player by towns
+select max(sd.speed) max_speed, t2.name town_name
+from skills_data sd
+         right join players p on sd.id = p.skills_data_id
+         right join teams t on p.team_id = t.id
+         right join stadiums s on t.stadium_id = s.id
+         right join towns t2 on s.town_id = t2.id
+where t.name != 'Devify'
+group by t2.name
+order by max_speed desc, t2.name;
+
+# 09. Total salaries and players by country
+select co.name,
+       count(p.id)   total_count_of_players,
+       sum(p.salary) total_sum_of_salaries
+
+from countries co
+         left join towns t on co.id = t.country_id
+         left join stadiums s on t.id = s.town_id
+         left join teams t2 on s.id = t2.stadium_id
+         left join players p on t2.id = p.team_id
+group by co.name
+order by total_count_of_players desc, co.name;
+
+# 10.	Find all players that play on stadium
+create function udf_stadium_players_count(stadium_name VARCHAR(30))
+    returns int
+    deterministic
+begin
+    return (
+        select count(p.id)
+        from players p
+                 join teams t on p.team_id = t.id
+                 join stadiums s on t.stadium_id = s.id
+        where s.name = stadium_name
+    );
+end;
+
+
+# Query
+SELECT udf_stadium_players_count('Jaxworks') as `count`;
+# count
+# 14
+
+# Query
+SELECT udf_stadium_players_count('Linklinks') as `count`;
+# count
+# 0
+
+# 11.	Find good playmaker by teams
+create procedure udp_find_playmaker(min_dribble_points int, team_name varchar(45))
+    deterministic
+begin
+    select concat_ws(' ', p.first_name, p.last_name) full_name,
+           p.age,
+           p.salary,
+           sd.dribbling,
+           sd.speed,
+           t.name                                    team_name
+    from players p
+             join teams t on p.team_id = t.id
+             join skills_data sd on sd.id = p.skills_data_id
+    where sd.dribbling > min_dribble_points
+      and t.name = team_name
+      and sd.speed >
+          (
+              select avg(speed)
+              from skills_data
+              where id in (select skills_data_id from players)
+          )
+    order by sd.speed desc
+    limit 1;
+end;
+
+CALL udp_find_playmaker (20, 'Skyble');
+
