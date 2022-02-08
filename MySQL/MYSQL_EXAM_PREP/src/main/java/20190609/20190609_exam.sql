@@ -66,8 +66,7 @@ create table employees_clients
 # 2. insert
 insert into cards (card_number, card_status, bank_account_id)
 select reverse(c.full_name), 'Active', c.id
-from bank_accounts
-         join clients c on bank_accounts.client_id = c.id
+from clients c
 where c.id between 191 and 200;
 
 # 3. update
