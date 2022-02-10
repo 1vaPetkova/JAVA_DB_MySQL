@@ -85,7 +85,10 @@ set a.country =
             when a.country like 'B%' then 'Blocked'
             when a.country like 'T%' then 'Test'
             when a.country like 'P%' then 'In Progress'
-            end;
+            end
+where a.country like 'B%'
+   or a.country like 'T%'
+   or a.country like 'P%';
 
 # 4. delete
 delete
@@ -161,6 +164,7 @@ begin
       and a.town = user_town;
 end;
 
-CALL udp_modify_user ('97 Valley Edge Parkway', 'DivinГіpolis');
-SELECT u.username, u.email,u.gender,u.age,u.job_title FROM users AS u
+CALL udp_modify_user('97 Valley Edge Parkway', 'DivinГіpolis');
+SELECT u.username, u.email, u.gender, u.age, u.job_title
+FROM users AS u
 WHERE u.username = 'eblagden21';
