@@ -4,6 +4,7 @@
     <file url="file://$PROJECT_DIR$/src/main/java/20181021/00. Table Design_Data.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/20181021/20181021–exam.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/20190609/20190609_exam.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/20190609/20190609_v2.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/20190609/seed-db.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/20200209/01. Table Design_data.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/20200209/20200209_exam.sql" dialect="MySQL" />
@@ -17,5 +18,6 @@
     <file url="file://$PROJECT_DIR$/src/main/java/20210620/01. Table Design_Data.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/20210620/20210620_exam.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/20210806/20210806_exam.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/exam_20220213/20220213_exam.sql" dialect="MySQL" />
   </component>
 </project>
